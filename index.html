@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Отчёт по МФО-офферам - 26.03.2026</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f0f2f5; color: #1a1a2e; }
+
+.header { background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%); color: white; padding: 32px 40px; margin-bottom: 32px; }
+.header h1 { font-size: 26px; font-weight: 700; }
+.header .sub { font-size: 13px; opacity: 0.65; margin-top: 6px; }
+
+.container { max-width: 1200px; margin: 0 auto; padding: 0 24px 48px; }
+
+.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 32px; }
+.stat { background: white; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 3px rgba(0,0,0,.07); }
+.stat .lbl { font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: .5px; }
+.stat .val { font-size: 30px; font-weight: 700; margin-top: 4px; }
+.stat.g .val { color: #22c55e; }
+.stat.y .val { color: #f59e0b; }
+.stat.r .val { color: #ef4444; }
+.stat.b .val { color: #3b82f6; }
+
+.section-title { font-size: 14px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: .8px; margin: 28px 0 14px; padding-bottom: 8px; border-bottom: 2px solid #e2e8f0; }
+
+.card { background: white; border-radius: 14px; margin-bottom: 20px; box-shadow: 0 1px 4px rgba(0,0,0,.07); overflow: hidden; }
+.card-head { display: flex; align-items: center; justify-content: space-between; padding: 18px 24px; border-bottom: 1px solid #f1f5f9; }
+.card-head-left { display: flex; align-items: center; gap: 12px; }
+.pname { font-size: 18px; font-weight: 700; }
+.badge { display:inline-flex; align-items:center; gap:4px; font-size:11px; padding:3px 10px; border-radius:20px; font-weight:600; }
+.b-active { background:#dcfce7; color:#15803d; }
+.b-warn { background:#fef3c7; color:#92400e; }
+.b-err { background:#fee2e2; color:#991b1b; }
+.b-info { background:#e0e7ff; color:#3730a3; }
+.b-neutral { background:#f3f4f6; color:#6b7280; }
+.b-new { background:#dbeafe; color:#1e40af; }
+
+.card-body { padding: 20px 24px; }
+.card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.full { grid-column: 1 / -1; }
+
+.slbl { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .7px; color: #b0b8c4; margin-bottom: 8px; }
+
+.chat-msg { background: #f8fafc; border-radius: 8px; padding: 10px 14px; margin-bottom: 6px; font-size: 12px; line-height: 1.6; border-left: 3px solid #e2e8f0; }
+.chat-msg .author { font-weight: 700; color: #334155; }
+.chat-msg .time { color: #94a3b8; font-size: 10px; }
+.chat-msg .text { color: #475569; margin-top: 4px; }
+.chat-msg.highlight { border-left-color: #f59e0b; background: #fffbeb; }
+.chat-msg.important { border-left-color: #ef4444; background: #fef2f2; }
+
+.info-rows { display: flex; flex-direction: column; gap: 9px; }
+.ir { display: flex; align-items: flex-start; gap: 8px; }
+.il { font-size: 11px; color: #94a3b8; font-weight: 600; min-width: 110px; padding-top: 1px; }
+.iv { font-size: 12px; color: #334155; }
+
+.alert { border-radius:8px; padding:11px 14px; font-size:12px; line-height:1.6; margin-top: 10px; }
+.alert strong { display:block; font-size:10px; text-transform:uppercase; letter-spacing:.6px; margin-bottom:4px; }
+.alert-warn { background:#fff7ed; border:1px solid #fed7aa; color:#7c2d12; }
+.alert-warn strong { color:#ea580c; }
+.alert-info { background:#eff6ff; border:1px solid #bfdbfe; color:#1e3a5f; }
+.alert-info strong { color:#2563eb; }
+.alert-ok { background:#f0fdf4; border:1px solid #bbf7d0; color:#14532d; }
+.alert-ok strong { color:#16a34a; }
+.alert-err { background:#fef2f2; border:1px solid #fecaca; color:#7f1d1d; }
+.alert-err strong { color:#dc2626; }
+
+.task-row { display: flex; align-items: center; gap: 7px; font-size: 12px; margin-bottom: 4px; }
+.task-key { font-family: monospace; font-size: 11px; color: #3b82f6; text-decoration: none; min-width: 76px; }
+.task-key:hover { text-decoration: underline; }
+.ts { font-size: 11px; padding: 2px 7px; border-radius: 10px; font-weight: 600; white-space: nowrap; }
+.ts-done { background:#dcfce7; color:#15803d; }
+.ts-wip { background:#e0e7ff; color:#3730a3; }
+.ts-todo { background:#fee2e2; color:#991b1b; }
+
+.mentions-section { margin-top: 32px; }
+
+footer { text-align:center; font-size:11px; color:#cbd5e1; padding:24px 0; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Отчёт по МФО-офферам</h1>
+  <p class="sub">26 марта 2026 - Данные за последние 72 часа из Telegram-чатов + таблица партнёров</p>
+</div>
+
+<div class="container">
+
+<!-- Сводные показатели -->
+<div class="stats-row">
+  <div class="stat g"><div class="lbl">Активных МФО-чатов</div><div class="val">8</div></div>
+  <div class="stat b"><div class="lbl">Сообщений за 72ч</div><div class="val">104</div></div>
+  <div class="stat y"><div class="lbl">Требуют внимания</div><div class="val">3</div></div>
+  <div class="stat r"><div class="lbl">Блокеры</div><div class="val">2</div></div>
+</div>
+
+<!-- ===== ФИНУСЛУГИ ===== -->
+<div class="section-title">МФО-партнёры - Офферы</div>
+
+<div class="card">
+  <div class="card-head">
+    <div class="card-head-left">
+      <span class="pname">Финуслуги (агрегатор офферов)</span>
+      <span class="badge b-active">17 сообщений</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="slbl">Ключевые обновления ставок</div>
+    <div class="chat-msg highlight">
+      <span class="author">Sofa Ivahnenko</span> <span class="time">26.03</span>
+      <div class="text">С завтрашнего дня (26.03.2026) ставка за займ >4000 по OneClickMoney = <b>6 400 руб</b>. Повышение ставки по офферу Езаем - <b>2 240 руб</b> (повторники без изменений = 240 руб)</div>
+    </div>
+    <div class="chat-msg highlight">
+      <span class="author">Sofa Ivahnenko</span> <span class="time">24.03</span>
+      <div class="text">С 24.03.2026 по офферу CreditPlus начинает действовать общая ставка <b>2 400 руб</b></div>
+    </div>
+    <div class="chat-msg">
+      <span class="author">Дмитрий Рябов</span> <span class="time">25.03</span>
+      <div class="text">По офферу Срочно деньги ставка с сегодняшнего дня <b>2 720 руб</b></div>
+    </div>
+    <div class="chat-msg">
+      <span class="author">Nikaletta</span> <span class="time">25.03</span>
+      <div class="text">По офферу Займер фикс ставка с сегодня и по 31 марта - <b>6 400 руб</b></div>
+    </div>
+    <div class="chat-msg">
+      <span class="author">Дмитрий Рябов</span> <span class="time">26.03</span>
+      <div class="text">Повышение ставки по офферу 495кредит - <b>2 000 руб</b>. Также интересуются, есть ли трафик на Займы для ИП</div>
+    </div>
+
+    <div class="alert alert-warn" style="margin-top:14px">
+      <strong>Требует действия</strong>
+      Sofa Ivahnenko (@sofa_IV0) просит созвон на пятницу - обсудить план работы на конец марта - апрель. Согласовано ДС с 1 марта - нужно подписать. УПД и письмо о принадлежности реквизитов банка ВТБ - запрос от Svetlana Dumnova.
+    </div>
+  </div>
+</div>
+
+<!-- ===== FINBRIDGE / OCM ===== -->
+<div class="card">
+  <div class="card-head">
+    <div class="card-head-left">
+      <span class="pname">Finbridge (One Click Money / ДС)</span>
+      <span class="badge b-active">48 сообщений</span>
+      <span class="badge b-err">Падение выдач</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="slbl">Ситуация</div>
+    <div class="chat-msg important">
+      <span class="author">@danielspe</span> <span class="time">24.03</span>
+      <div class="text">Видим резкое падение выдач по ДС с 21 по 24 = <b>0 выдач</b>. До этого стабильно шли 1-4 выдачи в день. Среднедневной доход был <b>20 454 руб</b> и обвалился в ноль на 3 дня.</div>
+    </div>
+    <div class="chat-msg">
+      <span class="author">Илья Гришин (Finbridge)</span> <span class="time">24.03</span>
+      <div class="text">Были проблемы с ответами от сервиса ФМС. Есть незначительная просадка в конверсии. Готовы компенсировать потери по среднедневному доходу за предыдущий период.</div>
+    </div>
+    <div class="chat-msg highlight">
+      <span class="author">Илья Гришин</span> <span class="time">24.03</span>
+      <div class="text"><b>60к с нас точно</b>, но надо чтоб потом внутренний аудит отчёты принял. Екатерина запросила уникальные клики + EPC выгрузкой для расчёта.</div>
+    </div>
+
+    <div class="alert alert-info" style="margin-top:14px">
+      <strong>Статус</strong>
+      Проблема с ФМС решена с утра 24.03. Finbridge готов компенсировать ~60к. Нужно направить выгрузку уникальных кликов + EPC. @danielspe принял решение не переключать на OCM, наблюдать.
+    </div>
+  </div>
+</div>
+
+<!-- ===== А-ДЕНЬГИ ===== -->
+<div class="card">
+  <div class="card-head">
+    <div class="card-head-left">
+      <span class="pname">А-деньги</span>
+      <span class="badge b-active">65 сообщений / 30д</span>
+      <span class="badge b-warn">Договор не подписан</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="slbl">Интеграция и продукты</div>
+    <div class="chat-msg">
+      <span class="author">Sergey (@cloud_haze)</span>
+      <div class="text">Посадочные: PDL/IL (до 100к), Кредитная линия (до 50к), IL300 (около банковский продукт до 300к). Ссылки переданы с UTM-метками insapp.</div>
+    </div>
+    <div class="chat-msg highlight">
+      <span class="author">Vladislav (@lvladislavpopkovl)</span>
+      <div class="text">Ставка <b>2 500 руб</b>. Запускают все продукты сразу. Удобнее работать по договору Insapp. Уточняют: когда тестовая ссылка? Какой объём трафика?</div>
+    </div>
+    <div class="chat-msg">
+      <span class="author">@Gurkinn</span>
+      <div class="text">Во втором квартале планируется ~100к уникальных пользователей. Договор готовим на своей стороне.</div>
+    </div>
+    <div class="chat-msg">
+      <span class="author">@async_await</span>
+      <div class="text">Техническое: статус ApplicationSubmitted вместо CreditInProcessing (уточнение API)</div>
+    </div>
+
+    <div class="alert alert-warn" style="margin-top:14px">
+      <strong>Требует действия</strong>
+      1) Подготовить и направить договор (А-деньги хотят работать по нашему).<br>
+      2) Предоставить тестовую ссылку Vladislav.<br>
+      3) Согласовать ставку 2 500 руб.<br>
+      4) offer_id - уточнить техническую передачу клик-ИД.
+    </div>
+  </div>
+</div>
+
+<!-- ===== БЫСТРОДЕНЬГИ ===== -->
+<div class="card">
+  <div class="card-head">
+    <div class="card-head-left">
+      <span class="pname">Быстроденьги</span>
+      <span class="badge b-info">26 сообщений / 30д</span>
+      <span class="badge b-warn">Переход на МКК</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="slbl">Ключевые события</div>
+    <div class="chat-msg highlight">
+      <span class="author">Andrew (@Andrew_mng)</span>
+      <div class="text">Переход на МКК Быстроденьги. Новая ссылка: <code>bistrodengi-mkk.ru/get/</code> с UTM insapp. Замена с 14:00 по мск.</div>
+    </div>
+    <div class="chat-msg">
+      <span class="author">Ирина (@iren_yurevna)</span>
+      <div class="text">Договор на МКК БД: согласовали форму, меняем "акт" на УПД, убираем форму акта. Юристы дорабатывают.</div>
+    </div>
+    <div class="chat-msg">
+      <span class="author">@async_await</span>
+      <div class="text">Настройка постбеков: добавлена обработка статуса "заявка принята". Просим Быстроденьги настроить отправку со своей стороны.</div>
+    </div>
+    <div class="chat-msg">
+      <span class="author">Andrew</span>
+      <div class="text">Добавил Яну (руководитель партнерского маркетинга) в чат. Трафик немаркируемый - подтверждено @danielspe.</div>
+    </div>
+
+    <div class="alert alert-info" style="margin-top:14px">
+      <strong>Статус</strong>
+      Переход на МКК завершается. Договор в финальной доработке у юристов. Постбеки настраиваются. Последняя активность в чате - ~неделю назад.
+    </div>
+  </div>
+</div>
+
+<!-- ===== WEBBANKIR ===== -->
+<div class="card">
+  <div class="card-head">
+    <div class="card-head-left">
+      <span class="pname">WEBBANKIR</span>
+      <span class="badge b-info">47 сообщений / 30д</span>
+      <span class="badge b-warn">Мало трафика</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="slbl">Интеграция и трафик</div>
+    <div class="chat-msg important">
+      <span class="author">@async_await</span>
+      <div class="text">Проблема с постбеками: от WEBBANKIR приходят постбеки без offer_id (id конверсии). Передаём его в параметре sub_id_1, но они отправляют пустой. Ruslan Sid ушёл разбираться.</div>
+    </div>
+    <div class="chat-msg">
+      <span class="author">Vitold Spetsius</span>
+      <div class="text">Пока роста трафика не видят. 12 кликов за день, ср-чт было по 9-10.</div>
+    </div>
+    <div class="chat-msg highlight">
+      <span class="author">@danielspe</span>
+      <div class="text">397 уников на витрину зашли. Убрали сбор контактов (резал конверсию). В марте будет 9 пилотов аналогичных тому, где за день сделали 17 выдач. Витрина: <code>money.insapp.ru</code></div>
+    </div>
+    <div class="chat-msg">
+      <span class="author">Vitold Spetsius</span>
+      <div class="text">Сверка за февраль: видят 18 выдач в Keitaro.</div>
+    </div>
+    <div class="chat-msg">
+      <span class="author">Ruslan Sid</span>
+      <div class="text">Доступные статусы постбеков: Заявка подана, Выдано, Отказано. Статус "одобрено" пока не поддерживается.</div>
+    </div>
+
+    <div class="alert alert-warn" style="margin-top:14px">
+      <strong>Требует действия</strong>
+      1) Решить проблему с пустым offer_id в постбеках.<br>
+      2) Мониторить рост трафика после снятия сбора контактов.<br>
+      3) Закрыть сверку за февраль (18 выдач по данным Keitaro).
+    </div>
+  </div>
+</div>
+
+<!-- ===== MONEYMAN ===== -->
+<div class="card">
+  <div class="card-head">
+    <div class="card-head-left">
+      <span class="pname">MoneyMan</span>
+      <span class="badge b-info">49 сообщений / 30д</span>
+      <span class="badge b-warn">Сверка за февраль</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="slbl">Текущие вопросы</div>
+    <div class="chat-msg highlight">
+      <span class="author">Katya Knord</span>
+      <div class="text">Сверка за февраль: нужен ОК по сумме + закрывающие документы (счёт и акт). Сначала в чат на проверку, потом в ЭДО.</div>
+    </div>
+    <div class="chat-msg">
+      <span class="author">@danielspe</span>
+      <div class="text">По сумме ОК, акт и счет направим. Документы на почту: ekaterina.kuruc@idfeurasia.pro, tatiana.khvostova@idfeurasia.pro</div>
+    </div>
+    <div class="chat-msg">
+      <span class="author">Katya Knord</span>
+      <div class="text">Статусы конверсий: 0 - заявка, 1 - подтверждено (выдача), 2 - отказ. Если заявка одобрена - оплатят.</div>
+    </div>
+    <div class="chat-msg">
+      <span class="author">@danielspe</span>
+      <div class="text">Обнаружены ссылки без UTM, но все залетели в wmind bank 1. MoneyMan подтверждает - иногда лендос перетирается на их стороне.</div>
+    </div>
+
+    <div class="alert alert-warn" style="margin-top:14px">
+      <strong>Требует действия</strong>
+      1) Направить счёт и акт за февраль в чат на проверку, затем в ЭДО.<br>
+      2) Мониторить UTM-метки - проблема с перетиранием лендоса на стороне MoneyMan.
+    </div>
+  </div>
+</div>
+
+<!-- ===== ГРИНМАНИ ===== -->
+<div class="card">
+  <div class="card-head">
+    <div class="card-head-left">
+      <span class="pname">ГринМани</span>
+      <span class="badge b-info">11 сообщений / 30д</span>
+      <span class="badge b-warn">Постбеки + Договор</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="slbl">Интеграция</div>
+    <div class="chat-msg">
+      <span class="author">Дмитрий Беляев (@Dicibel)</span>
+      <div class="text">Отбили тестовый постбек об отклонённом займе. Успешно выданный - не могут в рамках теста. Параметры offer_id/external_application_id были перепутаны - поправили.</div>
+    </div>
+    <div class="chat-msg highlight">
+      <span class="author">Дмитрий Беляев</span>
+      <div class="text">По договору подгоняет юристов. Просит прощения за ожидание. Добавил операционного директора Екатерину в чат.</div>
+    </div>
+    <div class="chat-msg">
+      <span class="author">@Gurkinn</span>
+      <div class="text">Просил перенаправить тест на test-api.insapp.pro. Поправили порядок параметров в постбеке.</div>
+    </div>
+
+    <div class="alert alert-warn" style="margin-top:14px">
+      <strong>Требует действия</strong>
+      1) Проверить финальный постбек (последний отбили, ждём подтверждение корректности).<br>
+      2) Пушить по договору - юристы ГринМани дорабатывают.
+    </div>
+  </div>
+</div>
+
+<!-- ===== ВЕБЗАЙМ ===== -->
+<div class="card">
+  <div class="card-head">
+    <div class="card-head-left">
+      <span class="pname">Вебзайм</span>
+      <span class="badge b-neutral">0 сообщений / 30д</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="alert alert-err">
+      <strong>Неактивный чат</strong>
+      За 30 дней в чате нет ни одного сообщения. Необходимо выяснить статус партнёрства - работает ли оффер, есть ли трафик, актуальна ли интеграция.
+    </div>
+  </div>
+</div>
+
+<!-- ===== ЛОКОБАНК ===== -->
+<div class="section-title">Интеграция - ЛокоБанк</div>
+
+<div class="card">
+  <div class="card-head">
+    <div class="card-head-left">
+      <span class="pname">ЛокоБанк</span>
+      <span class="badge b-active">Запущен</span>
+      <span class="badge b-err">Проблемы с выдачами</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="card-grid">
+      <div>
+        <div class="slbl">Задачи в трекере</div>
+        <div class="task-row">
+          <a class="task-key" href="https://tracker.yandex.ru/INS-2098" target="_blank">INS-2098</a>
+          <span class="ts ts-done">Закрыто</span>
+          <span>Лендинг партнера (ЛокоБанк) ЭПИК</span>
+        </div>
+        <div class="task-row">
+          <a class="task-key" href="https://tracker.yandex.ru/INS-2100" target="_blank">INS-2100</a>
+          <span class="ts ts-done">Закрыто</span>
+          <span>Домен для партнера Локо-Банк</span>
+        </div>
+        <div class="task-row">
+          <a class="task-key" href="https://tracker.yandex.ru/INS-2101" target="_blank">INS-2101</a>
+          <span class="ts ts-done">Закрыто</span>
+          <span>Завести новый Ключ (ЛокоБанк)</span>
+        </div>
+        <div class="task-row">
+          <a class="task-key" href="https://tracker.yandex.ru/INS-2102" target="_blank">INS-2102</a>
+          <span class="ts ts-done">Закрыто</span>
+          <span>Разработать Лендинг (Локо-Банк) - ФРОНТ</span>
+        </div>
+        <div class="task-row">
+          <a class="task-key" href="https://tracker.yandex.ru/INS-2465" target="_blank">INS-2465</a>
+          <span class="ts ts-done">Закрыто</span>
+          <span>Отчеты по партнерам (Локо и Пампаду) - БЭК</span>
+        </div>
+      </div>
+      <div>
+        <div class="slbl">Статус интеграции</div>
+        <div class="info-rows">
+          <div class="ir"><span class="il">Тип</span><span class="iv">Лендинг</span></div>
+          <div class="ir"><span class="il">Все задачи</span><span class="iv"><span class="badge b-active">5/5 закрыты</span></span></div>
+          <div class="ir"><span class="il">Домен</span><span class="iv">Создан и настроен</span></div>
+          <div class="ir"><span class="il">Ключ</span><span class="iv">Заведён</span></div>
+          <div class="ir"><span class="il">Лендинг</span><span class="iv">Разработан</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="alert alert-err" style="margin-top:14px">
+      <strong>Внимание - Проблема с выдачами</strong>
+      @danielspe в МФО Рабочей группе: "Поменяйте ДС на OCM на Локо, почему молчишь что 3 дня нет выдач? Ты проверяешь ежедневно отчёты?" - Нужно срочно переключить поставщика и мониторить выдачи ежедневно.
+    </div>
+  </div>
+</div>
+
+<!-- ===== СООБЩЕНИЯ ОТ @danielspe И @async_await ===== -->
+<div class="section-title">Ключевые сообщения - @danielspe и @async_await</div>
+
+<div class="card">
+  <div class="card-head">
+    <div class="card-head-left">
+      <span class="pname">@danielspe (Гео)</span>
+      <span class="badge b-err">Ключевые указания</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="chat-msg important">
+      <span class="author">@danielspe</span> <span class="time">МФО Рабочая группа</span>
+      <div class="text">Поменяйте ДС на OCM на Локо, почему молчишь что 3 дня нет выдач? Ты проверяешь ежедневно отчёты?</div>
+    </div>
+    <div class="chat-msg important">
+      <span class="author">@danielspe</span> <span class="time">МФО Рабочая группа</span>
+      <div class="text">Не переключай на OCM, оставляем 1 день сегодня и наблюдаем. Наблюдаем значит наблюдаем и пишем в чат если ничего не прибавилось.</div>
+    </div>
+    <div class="chat-msg highlight">
+      <span class="author">@danielspe</span> <span class="time">МФО Рабочая группа</span>
+      <div class="text">Изучите итоги встречи. Нужна защита по текущим задачам - по каждой задаче нужны карточки в трекере по шаблону.</div>
+    </div>
+    <div class="chat-msg highlight">
+      <span class="author">@danielspe</span> <span class="time">МФО Рабочая группа</span>
+      <div class="text">Это всё можно с моими MCP до телеги автоматизировать - собирать все данные и класть в таблицы и трекер. Используй все доступные инструменты.</div>
+    </div>
+    <div class="chat-msg">
+      <span class="author">@danielspe</span> <span class="time">МФО Рабочая группа</span>
+      <div class="text">К этому моменту ждём причесанный беклог.</div>
+    </div>
+    <div class="chat-msg">
+      <span class="author">@danielspe</span> <span class="time">Finbridge</span>
+      <div class="text">Видим резкое падение выдач по ДС с 21 по 24 = 0 выдач. Среднедневной доход 20 454 руб обвалился в ноль на 3 дня.</div>
+    </div>
+    <div class="chat-msg">
+      <span class="author">@danielspe</span> <span class="time">Финуслуги</span>
+      <div class="text">Кидайте ДС в ЭДО, @Gurkinn пропушит бухгалтерию чтобы подписали.</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-head">
+    <div class="card-head-left">
+      <span class="pname">@async_await (Александр)</span>
+      <span class="badge b-info">Технические вопросы</span>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="chat-msg">
+      <span class="author">@async_await</span> <span class="time">А-деньги</span>
+      <div class="text">Статус ApplicationSubmitted - вместо CreditInProcessing (уточнение статусов API)</div>
+    </div>
+    <div class="chat-msg">
+      <span class="author">@async_await</span> <span class="time">МФО Рабочая группа</span>
+      <div class="text">Ребят, дайте список лендосов где включен баннер/форма КЦ/калькулятор - короче не просто рефвитрина.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== СВОДКА ДЕЙСТВИЙ ===== -->
+<div class="section-title">Сводка необходимых действий</div>
+
+<div class="card">
+  <div class="card-body">
+    <div style="display:flex;flex-direction:column;gap:12px;">
+
+      <div class="alert alert-err">
+        <strong>СРОЧНО</strong>
+        <b>ЛокоБанк</b> - 3 дня нет выдач. Переключить ДС на OCM. Мониторить ежедневно и писать в чат результат.
+      </div>
+
+      <div class="alert alert-err">
+        <strong>СРОЧНО</strong>
+        <b>Finbridge</b> - Направить выгрузку уникальных кликов + EPC для расчёта компенсации (~60к). Мониторить восстановление выдач после починки ФМС.
+      </div>
+
+      <div class="alert alert-warn">
+        <strong>Требует действия</strong>
+        <b>Финуслуги</b> - Подписать ДС (согласовано с 1 марта). Направить УПД в ЭДО + письмо о принадлежности реквизитов ВТБ. Согласовать созвон на пятницу с Sofa.
+      </div>
+
+      <div class="alert alert-warn">
+        <strong>Требует действия</strong>
+        <b>А-деньги</b> - Обсудить ставки по новым продуктам с Vladislav (@lvladislavpopkovl).
+      </div>
+
+      <div class="alert alert-warn">
+        <strong>Требует действия</strong>
+        <b>МФО Рабочая группа</b> - Подготовить причесанный беклог. Оформить карточки задач по шаблону. Подготовить защиту по текущим задачам. Предоставить список лендосов с баннером/формой КЦ/калькулятором для @async_await.
+      </div>
+
+      <div class="alert alert-info">
+        <strong>К сведению</strong>
+        <b>Обновления ставок за 24-26.03:</b> CreditPlus 2 400 руб, Срочно деньги 2 720 руб, Займер фикс 6 400 руб (до 31.03), 495кредит 2 000 руб, OneClickMoney 6 400 руб (>4000), Езаем 2 240 руб.
+      </div>
+
+      <div class="alert alert-warn">
+        <strong>Требует действия</strong>
+        <b>WEBBANKIR</b> - Решить проблему с пустым offer_id в постбеках. Мониторить рост трафика.
+      </div>
+
+      <div class="alert alert-warn">
+        <strong>Требует действия</strong>
+        <b>MoneyMan</b> - Направить счёт/акт за февраль в чат, затем в ЭДО. Мониторить UTM-проблему.
+      </div>
+
+      <div class="alert alert-warn">
+        <strong>Требует действия</strong>
+        <b>ГринМани</b> - Проверить финальный постбек. Пушить юристов по договору.
+      </div>
+
+      <div class="alert alert-info">
+        <strong>К сведению</strong>
+        <b>Быстроденьги</b> - переход на МКК, договор в доработке у юристов. Постбеки настраиваются.
+      </div>
+
+      <div class="alert alert-err">
+        <strong>Внимание</strong>
+        <b>Вебзайм</b> - 0 сообщений за 30 дней. Проверить актуальность партнёрства.
+      </div>
+
+    </div>
+  </div>
+</div>
+
+</div>
+
+<footer>Сгенерировано Claude Code - 26.03.2026</footer>
+
+</body>
+</html>
